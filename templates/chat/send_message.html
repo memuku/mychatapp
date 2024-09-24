@@ -15,7 +15,7 @@
     <form method="post">
         {% csrf_token %}
         <label for="receiver">Recipient Username:</label>
-        <input type="text" id="receiver" name="receiver" required>
+        <input type="text" id="receiver" name="receiver" value="{{ receiver }}" required>
         
         <label for="content">Message Content:</label>
         <textarea id="content" name="content" required></textarea>

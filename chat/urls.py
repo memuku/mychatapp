@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
 from .views import send_message , user_list
+from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
     path('', views.chat_view, name='chat'),
@@ -9,5 +10,6 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('send/', send_message, name='send_message'),
     path('users/', user_list, name='user_list'),
+    path('logout/', LogoutView.as_view(), name='logout'),
     path('register/', views.register, name='register')
 ]

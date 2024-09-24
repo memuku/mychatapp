@@ -9,3 +9,10 @@ class Message(models.Model):
 
     def __str__(self):
         return f"{self.sender} to {self.receiver}: {self.content}"
+
+class Block(models.Model):
+    user = models.ForeignKey(User, related_name='blocked_users', on_delete=models.CASCADE)
+    blocked_user = models.ForeignKey(User, related_name='blocked_by_users', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user.username} blocked {self.blocked_user.username}"
