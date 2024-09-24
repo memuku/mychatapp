@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .messages {
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            height: 300px;
+            overflow-y: auto;
+            background: #fff;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .message strong {
+            color: #007BFF;
+        }
+        button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .logout {
+            margin-top: 20px;
+            display: block;
+            padding: 10px;
+            background-color: #dc3545;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .logout:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chat Room: {{ chat_room.name }}</h1>
+    
+    <h2>Messages</h2>
+    <div class="messages">
+        {% for message in messages %}
+            <div class="message">
+                <strong>{{ message.sender.username }}:</strong> {{ message.content }} <em>{{ message.timestamp }}</em>
+            </div>
+        {% empty %}
+            <div>No messages yet.</div>
+        {% endfor %}
+    </div>
+
+    <h2>Send a Message</h2>
+    <form method="post" action="{% url 'send_message' chat_room.id %}">
+        {% csrf_token %}
+        <textarea name="content" required placeholder="Type your message here..."></textarea>
+        <button type="submit">Send</button>
+    </form>
+
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="logout">Logout</button>
+    </form>
+</body>
+</html>
