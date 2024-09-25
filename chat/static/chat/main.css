@@ -1,0 +1,91 @@
+body {
+    background: #f0f4f8;
+    color: #4a4a4a;
+    margin-top: 5rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #2c3e50;
+}
+
+ul {
+    margin: 0;
+}
+
+.bg-steel {
+    background-color: #3498db;
+}
+
+.site-header .navbar-nav .nav-link {
+    color: #ecf0f1;
+}
+
+.site-header .navbar-nav .nav-link:hover {
+    color: #ffffff;
+}
+
+.site-header .navbar-nav .nav-link.active {
+    font-weight: 600;
+    border-bottom: 2px solid #2980b9;
+}
+
+.content-section {
+    background: #ffffff;
+    padding: 20px;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.article-title {
+    color: #2980b9;
+}
+
+a.article-title:hover {
+    color: #1abc9c;
+    text-decoration: underline;
+}
+
+.article-content {
+    white-space: pre-line;
+    line-height: 1.6;
+}
+
+.article-img {
+    height: 65px;
+    width: 65px;
+    margin-right: 16px;
+    border-radius: 50%;
+}
+
+.article-metadata {
+    padding-bottom: 4px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #e1e1e1;
+}
+
+.article-metadata a:hover {
+    color: #3498db;
+    text-decoration: underline;
+}
+
+.article-svg {
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+}
+
+.account-img {
+    height: 125px;
+    width: 125px;
+    margin-right: 20px;
+    margin-bottom: 16px;
+    border-radius: 10%;
+    border: 2px solid #3498db;
+}
+
+.account-heading {
+    font-size: 2.5rem;
+    color: #34495e;
+}
