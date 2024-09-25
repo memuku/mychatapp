@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'chat/base.html' %}
 
 {% block content %}
 <h2>Kullanıcı Listesi</h2>
@@ -8,6 +8,8 @@
             {{ user.username }}
             <button onclick="sendMessage('{{ user.id }}')">Mesaj Gönder</button>
         </li>
+    {% empty %}
+        <li>Hiçbir kullanıcı bulunamadı.</li>
     {% endfor %}
 </ul>
 
@@ -19,7 +21,7 @@
             chatSocket.send(JSON.stringify({
                 'message': message,
                 'username': '{{ request.user.username }}', // Şu anki kullanıcı adı
-                'profile_pic': '{{ request.user.profile_pic.url }}', // Kullanıcının profil resmi
+                'profile_pic': '{{ request.user.profile.image.url }}', // Kullanıcının profil resmi
                 'user_id': userId // Mesaj gönderilecek kullanıcı ID'si
             }));
         }

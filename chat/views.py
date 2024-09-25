@@ -36,5 +36,5 @@ def chat_room(request, room_name):
 
 @login_required
 def user_list(request):
-    users = User.objects.exclude(id=request.user.id)  # Kayıtlı kullanıcıları getir, kendini hariç tut
+    users = User.objects.exclude(id=request.user.id)
     return render(request, 'chat/user_list.html', {'users': users})
