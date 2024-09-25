@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
@@ -12,7 +13,6 @@ def chat_home(request):
 
     if request.method == 'POST' and form.is_valid():
         room_name = form.cleaned_data['room_name']
-        room, created = Room.objects.get_or_create(name=room_name, slug=room_name)
 
         db_messages = Message.objects.filter(room=room_name)[:]
         messages.success(request, f"Joined: {room_name}")
@@ -32,3 +32,9 @@ def chat_room(request, room_name):
         'title': room_name,
         'db_messages': db_messages,
     })
+
+
+@login_required
+def user_list(request):
+    users = User.objects.exclude(id=request.user.id)  # Kayıtlı kullanıcıları getir, kendini hariç tut
+    return render(request, 'chat/user_list.html', {'users': users})

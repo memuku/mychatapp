@@ -1,6 +1,4 @@
-{% extends "chat/base.html" %}
-{% load crispy_forms_tags %}
-{% block content %}
+{% extends "chat/base.html" %} {% load crispy_forms_tags %} {% block content %}
 <div class="content-section">
     <h3 class="text-center">{{room_name}}</h3>
     <div id="chat-log-container"
@@ -41,9 +39,9 @@
         />
 
     {% block scripts %}
-    {{ room_name|json_script:"genel" }}
-    {{ request.user.username|json_script:"sevocan" }}
-    {{ request.user.profile.image.url|json_script:"1714418498401.jpeg" }}
+    {{ room_name|json_script:"room-name" }}
+    {{ request.user.username|json_script:"user-name" }}
+    {{ request.user.profile.image.url|json_script:"profile-pic" }}
     <script>
         const roomName = JSON.parse(
           document.getElementById('room-name').textContent
@@ -56,13 +54,13 @@
         );
 
         const chatSocket = new WebSocket(
-            'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
+          'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
         );
 
         chatSocket.onmessage = function (e) {
-            const data = JSON.parse(e.data);
-            if (data.message) {
-                let html = '<div class="media content-section">';
+          const data = JSON.parse(e.data);
+          if (data.message) {
+            let html = '<div class="media content-section">';
                 html += '<img class="rounded-circle article-img" src="'+data.profile_pic+'" />';
                 html += '<div class="media-body">';
                 html += '<div class="article-metadata">';
@@ -71,46 +69,40 @@
                 html += '<p class="article-content">' + data.message + '</p>';
                 html += '</div>';
                 html += '</div>';
-                document.querySelector('#chat-log').innerHTML += html;
+            document.querySelector('#chat-log').innerHTML += html
 
-                let myDiv = document.getElementById("chat-log-container");
-                myDiv.scrollTop = myDiv.scrollHeight;
-            } else {
-                alert("Message was empty");
-            }
+            let myDiv = document.getElementById("chat-log-container");
+            myDiv.scrollTop = myDiv.scrollHeight;
+          } else {
+              alert("Message was empty")
+          }
+
         };
 
         chatSocket.onclose = function (e) {
-            console.error('Chat socket closed unexpectedly');
+          console.error('Chat socket closed unexpectedly');
         };
 
         document.querySelector('#chat-message-input').focus();
         document.querySelector('#chat-message-input').onkeyup = function (e) {
-            if (e.keyCode === 13) {
-                // Enter tuşuna basıldığında
-                document.querySelector('#chat-message-submit').click();
-            }
+          if (e.keyCode === 13) {
+            // enter, return
+            document.querySelector('#chat-message-submit').click();
+          }
         };
 
         document.querySelector('#chat-message-submit').onclick = function (e) {
-            const messageInputDom = document.querySelector('#chat-message-input');
-            const message = messageInputDom.value.trim(); // Mesajı temizle
-
-            // Mesaj boşsa gönderim yapma
-            if (message === "") {
-                alert("Message cannot be empty!");
-                return;
-            }
-
-            chatSocket.send(
-                JSON.stringify({
-                    message: message,
-                    username: userName,
-                    profile_pic: profilePic,
-                    room: roomName,
-                })
-            );
-            messageInputDom.value = '';
+          const messageInputDom = document.querySelector('#chat-message-input');
+          const message = messageInputDom.value;
+          chatSocket.send(
+            JSON.stringify({
+              message: message,
+              username: userName,
+              profile_pic: profilePic,
+              room: roomName,
+            })
+          );
+          messageInputDom.value = '';
         };
     </script>
     {% endblock scripts %}

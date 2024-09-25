@@ -9,11 +9,6 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} profile"
-
-    # save method if the image is too big, Pillow for resizing
-
-    # Alternatively, you can also resize the image before committing the form
-    # Lots of ways to do it
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
