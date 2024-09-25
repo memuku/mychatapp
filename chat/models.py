@@ -9,7 +9,7 @@ from django.db import models
 class Message(models.Model):
     username = models.CharField(max_length=50)
     room = models.CharField(max_length=50, null=True)
-    message_content = models.TextField()
+    message_content = models.TextField(max_length=500)
     date_added = models.DateTimeField(auto_now_add=True)
     profile_pic = models.ImageField(null=True, blank=True)
 
@@ -22,7 +22,6 @@ class Message(models.Model):
 
 class Room(models.Model):
     name = models.CharField(max_length=50)
-    # for url
     slug = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
