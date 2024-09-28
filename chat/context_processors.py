@@ -1,5 +1,5 @@
 """
-Context processor for adding public rooms to base template
+Context processor for adding public rooms to base templates
 """
 from .models import Room
 

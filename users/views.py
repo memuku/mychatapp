@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
@@ -38,9 +39,12 @@ def profile(request):
     else:
         u_form = UserUpdateForm(instance=request.user)
         p_form = ProfileUpdateForm(instance=request.user.profile)
+
+        users = User.objects.all()
     context = {
         'u_form': u_form,
-        'p_form': p_form
+        'p_form': p_form,
+        'users': users
     }
     return render(request, 'users/profile.html', context)
 

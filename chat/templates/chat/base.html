@@ -33,7 +33,7 @@
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
               {% if user.is_authenticated %}
-              <img width="50px" class="rounded-circle" style="max-height: 40px; max-width: 40px;" src="{{user.profile.image.url}}">
+              <img width="50px" class="rounded-circle" style="max-height: 40px; max-width: 40px;" src="{{ user.profile.image.url }}">
                 <a class="nav-item nav-link" href="{% url 'profile' %}"> Profile</a>
                 <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
               {% else %}
@@ -71,13 +71,26 @@
                 {% for room in rooms %}
                 <li class="list-group-item list-group-item-light">
                     <a href="{% url 'chat-room' room.slug %}">
-                        {{room.name}}
+                        {{ room.name }}
                     </a>
                 </li>
                 {% endfor %}
                 {% endif %}
               </ul>
             </p>
+          </div>
+          <div class="content-section">
+            <h3>Registered Users</h3>
+            <ul class="list-group mt-2">
+              {% for user in users %}
+                <li class="list-group-item d-flex align-items-center">
+                  <img class="rounded-circle me-2" src="{{ user.profile.image.url }}" style="width: 30px; height: 30px;" alt="{{ user.username }}'s profile picture">
+                  {{ user.username }}
+                </li>
+              {% empty %}
+                <li class="list-group-item">No users registered.</li>
+              {% endfor %}
+            </ul>
           </div>
         </div>
       </div>

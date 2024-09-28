@@ -1,6 +1,28 @@
-{% extends "chat/base.html" %} {% load crispy_forms_tags %} {% block content %}
+{% extends "chat/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
 <div class="content-section">
-    <h3 class="text-center">{{room_name}}</h3>
+    <h3 class="text-center">{{ room_name }}</h3>
+
+    <!-- Section to display current users with clickable usernames -->
+    <div class="content-section">
+        <h5 class="text-center">Current Users</h5>
+        <ul class="list-group">
+            {% if users %}
+                {% for user in users %}
+                    <li class="list-group-item d-flex align-items-center">
+                        <img class="rounded-circle mr-2" src="{{ user.profile.image.url }}" alt="{{ user.username }}" width="30" height="30">
+                        <a href="#" class="user-link" data-username="{{ user.username }}">{{ user.username }}</a>
+                        <button class="btn btn-sm btn-primary ml-auto invite-btn" data-username="{{ user.username }}">Invite to Room</button>
+                    </li>
+                {% endfor %}
+            {% else %}
+                <li class="list-group-item">No users currently online.</li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <!-- Chat log display section -->
     <div id="chat-log-container"
         class="container bg-light p-3 rounded-sm border rounded overflow-auto"
         style="height: 480px; overflow-y:auto">
@@ -8,12 +30,12 @@
             {% if db_messages %}
             {% for m in db_messages %}
             <div class="media content-section">
-                <img class="rounded-circle article-img" src="{{m.profile_pic}}" />
+                <img class="rounded-circle article-img" src="{{ m.profile_pic }}" />
                 <div class="media-body">
                     <div class="article-metadata">
-                        <span class="mr-2"> {{m.username}}  </span>
+                        <span class="mr-2">{{ m.username }}</span>
                     </div>
-                    <p class="article-content">  {{m.message_content}}  </p>
+                    <p class="article-content">{{ m.message_content }}</p>
                 </div>
             </div>
             {% endfor %}
@@ -30,79 +52,122 @@
         id="chat-message-input"
         type="text"
         size="100"
-        /><br />
+    /><br />
     <input
         class="form-control"
         id="chat-message-submit"
         type="button"
         value="Send"
-        />
+    />
 
     {% block scripts %}
-    {{ room_name|json_script:"General" }}
+    {{ room_name|json_script:"room-name" }}
     {{ request.user.username|json_script:"user-name" }}
     {{ request.user.profile.image.url|json_script:"profile-pic" }}
+
     <script>
-    const roomName = JSON.parse(
-        document.getElementById('General').textContent
-    );
-    const userName = JSON.parse(
-        document.getElementById('user-name').textContent
-    );
-    const profilePic = JSON.parse(
-        document.getElementById('profile-pic').textContent
-    );
+        const roomName = JSON.parse(
+          document.getElementById('room-name').textContent
+        );
+        const userName = JSON.parse(
+          document.getElementById('user-name').textContent
+        );
+        const profilePic = JSON.parse(
+          document.getElementById('profile-pic').textContent
+        );
 
-    const socket = new WebSocket('ws://localhost:8000/General/');
+        const chatSocket = new WebSocket(
+                'wss://echo.websocket.org'
+        );
 
-    chatSocket.onmessage = function (e) {
-        const data = JSON.parse(e.data);
-        if (data.message) {
+        // Function to handle incoming messages
+        chatSocket.onmessage = function (e) {
+          const data = JSON.parse(e.data);
+          if (data.message) {
             let html = '<div class="media content-section">';
-            html += '<img class="rounded-circle article-img" src="'+data.profile_pic+'" />';
-            html += '<div class="media-body">';
-            html += '<div class="article-metadata">';
-            html += '<span class="mr-2">'+ data.username + '</span>';
-            html += '</div>';
-            html += '<p class="article-content">' + data.message + '</p>';
-            html += '</div>';
-            html += '</div>';
-            document.querySelector('#chat-log').innerHTML += html;
+                html += '<img class="rounded-circle article-img" src="'+data.profile_pic+'" />';
+                html += '<div class="media-body">';
+                html += '<div class="article-metadata">';
+                html += '<span class="mr-2">'+ data.username + '</span>';
+                html += '</div>';
+                html += '<p class="article-content">' + data.message + '</p>';
+                html += '</div>';
+                html += '</div>';
+            document.querySelector('#chat-log').innerHTML += html
 
             let myDiv = document.getElementById("chat-log-container");
             myDiv.scrollTop = myDiv.scrollHeight;
-        } else {
-            alert("Message was empty");
-        }
-    };
+          } else {
+              alert("Message was empty")
+          }
+        };
 
-    chatSocket.onclose = function (e) {
-        console.error('Chat socket closed unexpectedly');
-    };
+        chatSocket.onclose = function (e) {
+          console.error('Chat socket closed unexpectedly');
+        };
 
-    document.querySelector('#chat-message-input').focus();
-    document.querySelector('#chat-message-input').onkeyup = function (e) {
-        if (e.keyCode === 13) {
-            // enter, return
+        // Send message on enter
+        document.querySelector('#chat-message-input').focus();
+        document.querySelector('#chat-message-input').onkeyup = function (e) {
+          if (e.keyCode === 13) {
             document.querySelector('#chat-message-submit').click();
-        }
-    };
+          }
+        };
 
-    document.querySelector('#chat-message-submit').onclick = function (e) {
-        const messageInputDom = document.querySelector('#chat-message-input');
-        const message = messageInputDom.value;
-        chatSocket.send(
+        // Handle sending messages
+        document.querySelector('#chat-message-submit').onclick = function (e) {
+          const messageInputDom = document.querySelector('#chat-message-input');
+          const message = messageInputDom.value;
+          chatSocket.send(
             JSON.stringify({
-                message: message,
-                username: userName,
-                profile_pic: profilePic,
-                room: roomName,
+              message: message,
+              username: userName,
+              profile_pic: profilePic,
+              room: roomName,
             })
-        );
-        messageInputDom.value = '';
-    };
-</script>
+          );
+          messageInputDom.value = '';
+        };
 
+        // Clickable users to send direct messages
+        document.querySelectorAll('.user-link').forEach(function(element) {
+            element.addEventListener('click', function(e) {
+                e.preventDefault();
+                const clickedUsername = e.target.getAttribute('data-username');
+                if (clickedUsername !== userName) {
+                    const message = prompt('Send a message to ' + clickedUsername + ':');
+                    if (message) {
+                        chatSocket.send(
+                            JSON.stringify({
+                                message: message,
+                                username: userName,
+                                profile_pic: profilePic,
+                                room: clickedUsername,  // Assume room name is username for DMs
+                            })
+                        );
+                    }
+                } else {
+                    alert("You can't send a message to yourself!");
+                }
+            });
+        });
+
+        // Handle room invites
+        document.querySelectorAll('.invite-btn').forEach(function(element) {
+            element.addEventListener('click', function(e) {
+                const inviteUsername = e.target.getAttribute('data-username');
+                if (inviteUsername !== userName) {
+                    const confirmInvite = confirm('Invite ' + inviteUsername + ' to the room?');
+                    if (confirmInvite) {
+                        alert(inviteUsername + ' has been invited to ' + roomName + '!');
+                        // You can also send a WebSocket message for the invite here
+                    }
+                } else {
+                    alert("You can't invite yourself to the room!");
+                }
+            });
+        });
+    </script>
     {% endblock scripts %}
 </div>
 {% endblock content %}

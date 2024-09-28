@@ -1,5 +1,15 @@
-{% extends "chat/base.html" %} {% load crispy_forms_tags %} {% block content %}
+{% extends "chat/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
 <div class="content-section">
+  <h3>Online Users</h3>
+  <ul class="list-group mb-4">
+    {% for user in users %}
+      <li class="list-group-item">{{ user.username }}</li>
+    {% empty %}
+      <li class="list-group-item">No users online.</li>
+    {% endfor %}
+  </ul>
   <form method="POST">
     {% csrf_token %}
     <fieldset class="form-group">
